@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 import requests
 from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
 from multiprocessing import Pool
 import time
 import random
@@ -18,23 +19,24 @@ headers = {'User-Agent': ua.random}
 def get_most_page(start):
     try:
         data = {
-            'name':"",
-            'industryCode': "",
-            'typeCode':"",
-            'wasBindUniTechnology' :"-9",
-            'investStageCode':"",
-            'provinceCode' :'43',
-            'pageIndex':start,
-            'pageSize':'15',
+            "name": "",
+            "industryCode":"",
+            "typeCode":"",
+            "wasBindUniTechnology":"-9",
+            "investStageCode":"",
+            "provinceCode":"",
+            "pageIndex": start,
+            "pageSize": "15",
         }
 
         params = urlencode(data)
         base = 'http://cy.ncss.org.cn/search/projectlist?'
         url = base + params
         try:
-            response = requests.get(url,headers=headers,timeout=10)
+            response = requests.get(url,headers=headers,timeout=100)
             if response.status_code == 200:
                 return response.text
+                time.sleep(random.choice([1,2,3,4]))
             return None
 
         except ConnectionError:
@@ -43,6 +45,10 @@ def get_most_page(start):
 
     except ConnectionError as c:
         print(c)
+        pass
+
+    except Timeout as r:
+        print(r)
         pass
 
 
@@ -78,6 +84,11 @@ def parse_page_index(html):
     except IndexError as e:
         print(e)
         pass
+
+    except TypeError as n:
+        print(n)
+        pass
+
 
 
 
